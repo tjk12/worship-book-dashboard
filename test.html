@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <style>
+        th,
+        td {
+            height: 50px;
+            /* Adjust height as needed */
+            width: 350px;
+            /* Adjust width as needed */
+        }
+
+        td div.scrolling-cell {
+            overflow: auto;
+            max-height: 5rem;
+            min-width: 40rem;
+        }
+
+        /* Custom styles for the dropdown */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            margin-right: 10px; /* Add some right margin for spacing */
+            margin-bottom: 15px;
+
+        }
+
+        .dropdown-label {
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .dropdown-list {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            min-width: 200px;
+            border: 1px solid #ccc;
+            z-index: 1;
+            margin-top: 10px;
+        }
+
+        .dropdown-list label {
+            display: block;
+            padding: 10px;
+        }
+
+        .dropdown-list label:hover {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-fluid py-4">
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header pb-0">
+                        <h5 class="font-weight-bolder">TPC</h5>
+                    </div>
+                    <div class="card-body px-0 pt-0 pb-2">
+                        <div class="dropdown">
+                            <label class="dropdown-label" for="dropdownMenuButton">Select Columns</label>
+                            <div class="dropdown-list" id="dropdownMenuButton">
+                                <div class="dropdown-item">
+                                    <input type="checkbox" id="toggle-all-columns" checked> Toggle All
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <!-- Dynamically generate checkboxes for each column -->
+                                <div id="column-checkboxes">
+                                    <!-- Columns will be dynamically added here -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive p-0">
+                            <table class="display" id="models" style="width:100%">
+                                <thead>
+                                    <tr class="text-center mb-0 text-lg font-weight-bold">
+                                        <th>Rocket Name</th>
+                                        <th>Mission Specialists</th>
+                                        <th>Flight Engineers</th>
+                                        <th>Type</th>
+                                        <th>Lift-off Weight (grams)</th>
+                                        <th>Altitude (meters)</th>
+                                        <th>Altitude (feet)</th>
+                                        <th>Egg</th>
+                                        <th>Shockcord</th>
+                                        <th>Nose cone</th>
+                                        <th>Coupler</th>
+                                        <th>Parachute</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    <tr>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Apollo 13 Jr
+                                        </td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Koehl</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Allie, Sayla
+                                        </td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Astra III</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">90.5 g</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">173.1 m</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">567.9 ft</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">opened</td>
+                                        <td class="mb-0 text-lg font-weight-bold"
+                                            style="max-height: 20px !important; overflow: hidden;">
+                                            <div class="scrolling-cell">Three cotton balls and three packing peanuts
+                                                were used to cushion the egg. The predicted altitude was 23 feet. The
+                                                rocket "shot high and to the left". The parachute "came straight out"
+                                                and the rocket spun on its way to the ground. It landed on the grass
+                                                next to the first base fence. This rocket won the challenge for this
+                                                class. <a
+                                                    href="https://hopirockets.com/gallery_rockets/index.php/Jan_9_2023/Banister/Apollo_13_Jr"
+                                                    target="_blank">Pictures</a></div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Glizzy Ravens
+                                        </td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Diego, Cameron
+                                        </td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Mauricio,
+                                            Diego</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Astra III</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">90.8 g</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">97.0 m</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">318.3 ft</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">separated</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">opened</td>
+                                        <td class="mb-0 text-lg font-weight-bold"
+                                            style="max-height: 20px !important; overflow: hidden;">
+                                            <div class="scrolling-cell">Four cotton balls and one tissue were used to
+                                                cushion the egg. The predicted altitude was 100 meters. The rocket flew
+                                                straight up, and when the parachute deployed, the payload section was
+                                                not attached to the parachute. The rocket flipped through the air on the
+                                                way down. The flight "didn't go as planned". The coupler was not fit
+                                                well enough into the payload section. Egg crashed into the dirt on the
+                                                field between first and second base. <a
+                                                    href="https://hopirockets.com/gallery_rockets/index.php/Jan_9_2023/Banister/Glizzy_Ravens"
+                                                    target="_blank">Pictures</a></div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Gurl Boss</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Lila, Ella
+                                        </td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Will, Melissa
+                                        </td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Astra III</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">91.8 g</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">91.7 m</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">300.7 ft</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">opened</td>
+                                        <td class="mb-0 text-lg font-weight-bold"
+                                            style="max-height: 20px !important; overflow: hidden;">
+                                            <div class="scrolling-cell">Cotton balls, cotton pads, tissue, and bubble
+                                                wrap were used to cushion the egg. The predicted altitude was 275 feet.
+                                                The rocket flew straight up and then the wind pushed it towards first
+                                                base - it landed on the road. The parachute opened properly and then the
+                                                wind caught the rocket on its descent and pushed it into the fence near
+                                                first base. Smoke came out of the bottom of the rocket - likely from the
+                                                engine. Smelled really bad. <a
+                                                    href="https://hopirockets.com/gallery_rockets/index.php/Jan_9_2023/Banister/Gurl_Boss"
+                                                    target="_blank">Pictures</a></div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Shooting Stars
+                                        </td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Julian,
+                                            Stellie</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Lucy, Maggie
+                                        </td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Astra III</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">95.0 g</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">90.0 m</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">295.2 ft</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">opened</td>
+                                        <td class="mb-0 text-lg font-weight-bold"
+                                            style="max-height: 20px !important; overflow: hidden;">
+                                            <div class="scrolling-cell">Four cotton balls, six premium cotton rounds,
+                                                and tissue were used to cushion the egg. The predicted altitude was 300
+                                                feet. The flight path was straight up then to the left. Parachute
+                                                deployed and the rocket "didn't spin as much as the others" on the way
+                                                down. Rocket landed in right field in the grass. Smelled like rotten
+                                                eggs when the rocket was retrieved. <a
+                                                    href="https://hopirockets.com/gallery_rockets/index.php/Jan_9_2023/Banister/Shooting_Stars"
+                                                    target="_blank">Pictures</a></div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Rocketeer</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Charlie, Jacob
+                                        </td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Mason, Henry
+                                        </td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Astra III</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">90.0 g</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">100.8 m</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">330.8 ft</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">opened</td>
+                                        <td class="mb-0 text-lg font-weight-bold"
+                                            style="max-height: 20px !important; overflow: hidden;">
+                                            <div class="scrolling-cell">Two cotton balls and three packing peanuts were
+                                                used to cushion the egg. The predicted altitude was 1000 feet. The
+                                                rocket shot to the right of the launch stand instead of straight up. It
+                                                did not seem to fly as high as the others. The rocket landed near the
+                                                fence on the first base side. The rocket "stunk" when unpacking to check
+                                                the egg. <a
+                                                    href="https://hopirockets.com/gallery_rockets/index.php/Jan_9_2023/Banister/Rocketeer"
+                                                    target="_blank">Pictures</a></div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">The Rock Stars
+                                        </td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Colin, Brady
+                                        </td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Beckett,
+                                            Hudson</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">Astra III</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">91.5 g</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">111.4 m</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">365.3 ft</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">intact</td>
+                                        <td class="text-center mb-0 text-lg font-weight-bold text-nowrap">opened</td>
+                                        <td class="mb-0 text-lg font-weight-bold"
+                                            style="max-height: 20px !important; overflow: hidden;">
+                                            <div class="scrolling-cell">Four cotton balls were used to cushion the egg.
+                                                The predicted altitude was 460 feet. The rocket flew straight up,
+                                                "really high" and then drifted to the left on the way down. The
+                                                parachute was "perfect" and the rocket "spun down softly". Landed in the
+                                                grass in right field. <a
+                                                    href="https://hopirockets.com/gallery_rockets/index.php/Jan_9_2023/Banister/The_Rock_Stars"
+                                                    target="_blank">Pictures</a></div>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var table = $('#models').DataTable();
+
+            // Generate checkboxes for each column dynamically
+            $('#models thead th').each(function (index) {
+                var columnTitle = $(this).text();
+                $('#column-checkboxes').append('<label><input type="checkbox" class="column-checkbox" data-column="' + index + '" checked>' + columnTitle + '</label>');
+            });
+
+            // Toggle all columns checkbox event handler
+            $('#toggle-all-columns').change(function () {
+                var isChecked = $(this).prop('checked');
+                $('.column-checkbox').prop('checked', isChecked).trigger('change');
+            });
+
+            // Individual column checkbox event handler
+            $('.column-checkbox').change(function () {
+                var column = table.column($(this).data('column'));
+                column.visible($(this).prop('checked'));
+            });
+
+            // Dropdown functionality
+            $('.dropdown-label').click(function () {
+                $('.dropdown-list').toggle();
+            });
+
+            $(document).click(function (event) {
+                if (!$(event.target).closest('.dropdown').length) {
+                    $('.dropdown-list').hide();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
