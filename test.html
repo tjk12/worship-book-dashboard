@@ -5,28 +5,26 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         th,
         td {
             height: 50px;
-            /* Adjust height as needed */
-            max-width: 150px;
-            /* Adjust width as needed */
+            min-width: 150px !important;
+            max-width: 350px !important;
+            word-wrap: break-word;
         }
 
         td div.scrolling-cell {
             overflow: auto;
             max-height: 5rem;
-            min-width: 20rem;
             max-width: 50rem;
         }
 
-        /* Custom styles for the dropdown */
         .dropdown {
             position: relative;
             display: inline-block;
             margin-right: 10px;
-            /* Add some right margin for spacing */
             margin-bottom: 15px;
         }
 
@@ -56,15 +54,26 @@
             background-color: #f2f2f2;
         }
     </style>
+
 </head>
 
 <body>
 
     <div class="container-fluid py-4">
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="card mb-4">
-                    <div class="card-header pb-0">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="tab1-tab" data-toggle="tab" href="#tab1" role="tab" aria-controls="tab1"
+                    aria-selected="true">Worship Books</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="tab2-tab" data-toggle="tab" href="#tab2" role="tab" aria-controls="tab2"
+                    aria-selected="false">Coming Soon</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
+                <div class="card mt-4">
+                    <div class="card-header">
                         <h5 class="font-weight-bolder">TPC</h5>
                     </div>
                     <div class="card-body px-0 pt-0 pb-2">
@@ -72,12 +81,13 @@
                             <label class="dropdown-label" for="dropdownMenuButton">Select Columns</label>
                             <div class="dropdown-list" id="dropdownMenuButton">
                                 <div class="dropdown-item">
+                                    <input type="checkbox" id="toggle-songs"> Toggle Songs
+                                </div>
+                                <div class="dropdown-item">
                                     <input type="checkbox" id="toggle-all-columns" checked> Toggle All
                                 </div>
                                 <div class="dropdown-divider"></div>
-                                <!-- Dynamically generate checkboxes for each column -->
                                 <div id="column-checkboxes">
-                                    <!-- Columns will be dynamically added here -->
                                 </div>
                             </div>
                         </div>
@@ -85,14 +95,22 @@
                             <table class="display" id="models" style="width:100%">
                                 <thead>
                                     <tr class="text-center mb-0 text-lg font-weight-bold">
-
                                     </tr>
                                 </thead>
                                 <tbody id="table-body">
-                                    <!-- Table body will be dynamically populated here -->
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="font-weight-bolder">Welcome!</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Welcome!</p>
                     </div>
                 </div>
             </div>
@@ -101,16 +119,20 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         $(document).ready(function () {
             $.ajax({
                 type: "GET",
-                url: "test-data.json",
+                url: "best_book_yet.json",
                 dataType: "json",
                 success: function (data) {
                     // Extract headers from JSON data
                     var headers = Object.keys(data[0]);
-    
+
+                    // Find the index of the 'Date' column
+                    var dateColumnIndex = headers.indexOf('Date');
+
                     // Add headers to the table
                     var headerContent = '<tr class="text-center mb-0 text-lg font-weight-bold">';
                     headers.forEach(function (header) {
@@ -118,7 +140,7 @@
                     });
                     headerContent += '</tr>';
                     $('#models thead').html(headerContent);
-    
+
                     var tableContent = '';
                     data.forEach(function (row) {
                         tableContent += '<tr>';
@@ -128,39 +150,39 @@
                         tableContent += '</tr>';
                     });
                     $('#table-body').html(tableContent);
-    
+
                     // Initialize DataTable after table content is loaded
                     var table = $('#models').DataTable({
-                        "scrollY": "400px",
+                        "scrollY": "600px",
                         "scrollX": true,
                         "scrollCollapse": true,
-                        "paging": false,
-                        "fixedHeader": true,
-                        "order": []
+                        "paging": true,
+                        "order": [[dateColumnIndex, 'desc']], // Order by 'Date' column in descending order
+                        "fixedHeader": true
                     });
-    
+
                     // Generate checkboxes for each column dynamically
                     headers.forEach(function (header, index) {
                         $('#column-checkboxes').append('<label><input type="checkbox" class="column-checkbox" data-column="' + index + '" checked>' + header + '</label>');
                     });
-    
+
                     // Toggle all columns checkbox event handler
                     $('#toggle-all-columns').change(function () {
                         var isChecked = $(this).prop('checked');
                         $('.column-checkbox').prop('checked', isChecked).trigger('change');
                     });
-    
+
                     // Individual column checkbox event handler
                     $('.column-checkbox').change(function () {
                         var column = table.column($(this).data('column'));
                         column.visible($(this).prop('checked'));
                     });
-    
+
                     // Dropdown functionality
                     $('.dropdown-label').click(function () {
                         $('.dropdown-list').toggle();
                     });
-    
+
                     $(document).click(function (event) {
                         if (!$(event.target).closest('.dropdown').length) {
                             $('.dropdown-list').hide();
@@ -169,9 +191,5 @@
                 }
             });
         });
+
     </script>
-
-    
-</body>
-
-</html>
