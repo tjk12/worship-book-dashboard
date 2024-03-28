@@ -5,7 +5,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
         th,
         td {
@@ -67,7 +69,15 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="tab2-tab" data-toggle="tab" href="#tab2" role="tab" aria-controls="tab2"
-                    aria-selected="false">Coming Soon</a>
+                    aria-selected="false">Song Craft</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="tab3-tab" data-toggle="tab" href="#tab3" role="tab" aria-controls="tab3"
+                    aria-selected="false">Song Summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="tab4-tab" data-toggle="tab" href="#tab4" role="tab" aria-controls="tab4"
+                    aria-selected="false">Column Summary</a>
             </li>
         </ul>
         <div class="tab-content" id="myTabContent">
@@ -105,23 +115,208 @@
                 </div>
             </div>
             <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <h5 class="font-weight-bolder">Welcome!</h5>
-                    </div>
-                    <div class="card-body">
-                        <p>Welcome!</p>
-                    </div>
+                <div class="table-responsive p-0">
+                    <table class="display" id="models2" style="width:100%">
+                        <thead>
+                            <tr class="text-center mb-0 text-lg font-weight-bold">
+                                <th>Date</th>
+                                <th>Purpose</th>
+                                <th>Title</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body2">
+                        </tbody>
+                    </table>
                 </div>
             </div>
+            <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
+                <div class="table-responsive">
+                    <table class="table" id="song-summary-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Count</th>
+                                <th>Most Recent Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="song-summary-table-body">
+                            <!-- Table body will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab">
+                <div class="dropdown mt-4">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="columnDropdownButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Select Column to Summarize
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="columnDropdownButton" id="column-dropdown">
+                        <!-- Dropdown items will be populated dynamically -->
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table" id="column-summary-table">
+                        <thead>
+                            <tr>
+                                <th>Column</th>
+                                <th>Count</th>
+                                <th>Most Recent Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="column-summary-table-body">
+                            <!-- Table body will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 
+    <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
     <script>
         $(document).ready(function () {
+            // Function to transform data and populate the second table
+            function populateSecondTable(data) {
+                var tableBody = $('#table-body2');
+                tableBody.empty();
+                data.forEach(function (row) {
+                    tableBody.append(`<tr><td>${row.Date}</td><td>Entrance Hymn</td><td>${row['Entrance Hymn']}</td></tr>`);
+                    tableBody.append(`<tr><td>${row.Date}</td><td>Epistle Hymn</td><td>${row['Epistle Hymn']}</td></tr>`);
+                    tableBody.append(`<tr><td>${row.Date}</td><td>Offertory</td><td>${row['Offertory']}</td></tr>`);
+                    tableBody.append(`<tr><td>${row.Date}</td><td>Bread</td><td>${row['Bread']}</td></tr>`);
+                    tableBody.append(`<tr><td>${row.Date}</td><td>Cup</td><td>${row['Cup']}</td></tr>`);
+                    tableBody.append(`<tr><td>${row.Date}</td><td>Hymn of Response</td><td>${row['Hymn of Response']}</td></tr>`);
+                });
+            }
+
+            // Function to extract 'Date' and 'Title' from the original data
+            function extractDataFromOriginalData(data) {
+                var tableData = [];
+                data.forEach(function (rowData) {
+                    var date = rowData['Date']; // Extract the 'Date' field
+                    var titles = [
+                        rowData['Entrance Hymn'],
+                        rowData['Epistle Hymn'],
+                        rowData['Offertory'],
+                        rowData['Bread'],
+                        rowData['Cup'],
+                        rowData['Hymn of Response']
+                    ];
+                    // Iterate through titles and push date and title pair to tableData
+                    titles.forEach(function (title) {
+                        if (title) {
+                            tableData.push({ date: date, title: title });
+                        }
+                    });
+                });
+                return tableData;
+            }
+
+            function populateThirdTable(data) {
+                var groupedData = groupByTitle(data);
+                var tableBody = $('#song-summary-table-body');
+                tableBody.empty();
+                for (var title in groupedData) {
+                    if (groupedData.hasOwnProperty(title) && title !== "No Epistle Hymn") {
+                        var count = groupedData[title].count;
+                        var mostRecentDate = groupedData[title].mostRecentDate;
+                        tableBody.append(`<tr><td>${title}</td><td>${count}</td><td>${mostRecentDate}</td></tr>`);
+                    }
+                }
+            }
+
+            function groupByTitle(data) {
+                var groupedData = {};
+                data.forEach(function (row) {
+                    var title = row.title;
+                    var date = row.date;
+                    if (!groupedData[title]) {
+                        groupedData[title] = { count: 1, mostRecentDate: date };
+                    } else {
+                        groupedData[title].count++;
+                        if (date > groupedData[title].mostRecentDate) {
+                            groupedData[title].mostRecentDate = date;
+                        }
+                    }
+                });
+                return groupedData;
+            }
+
+            // Function to populate the summarized data table
+            function populateColumnSummaryTable(data, selectedColumn) {
+                var summaryData = groupByColumn(data, selectedColumn);
+                var tableBody = $('#column-summary-table-body');
+                tableBody.empty();
+                for (var column in summaryData) {
+                    if (summaryData.hasOwnProperty(column)) {
+                        var count = summaryData[column].count;
+                        var mostRecentDate = summaryData[column].mostRecentDate;
+                        tableBody.append(`<tr><td>${column}</td><td>${count}</td><td>${mostRecentDate}</td></tr>`);
+                    }
+                }
+            }
+
+
+
+            // Function to generate checkboxes for selecting columns dynamically for summary
+            function generateColumnCheckboxesSummary(headers) {
+                var dropdownList = $('#dropdownColumnsSummary');
+                dropdownList.empty();
+                headers.forEach(function (header) {
+                    if (header !== 'Date' && header !== 'Time') { // Exclude 'Date' and 'Time' columns
+                        dropdownList.append(`<a class="dropdown-item" href="#">${header}</a>`);
+                    }
+                });
+            }
+
+            // Function to group data by selected columns and calculate count and most recent date
+            function groupByColumn(data, columns) {
+                var groupedData = {};
+                data.forEach(function (row) {
+                    columns.forEach(function (column) {
+                        if (row[column]) {
+                            if (!groupedData[column]) {
+                                groupedData[column] = { count: 1, mostRecentDate: row['Date'] };
+                            } else {
+                                groupedData[column].count++;
+                                if (row['Date'] > groupedData[column].mostRecentDate) {
+                                    groupedData[column].mostRecentDate = row['Date'];
+                                }
+                            }
+                        }
+                    });
+                });
+                return groupedData;
+            }
+            function generateColumnDropdown(headers) {
+                var dropdownMenu = $('#column-dropdown');
+                dropdownMenu.empty();
+                headers.forEach(function (header) {
+                    dropdownMenu.append(`<a class="dropdown-item" href="#" data-column="${header}">${header}</a>`);
+                });
+            }
+
+
+
+            // Function to generate checkboxes for selecting columns dynamically
+            function generateColumnCheckboxes(headers) {
+                var dropdownList = $('#dropdownColumns');
+                dropdownList.empty();
+                headers.forEach(function (header) {
+                    if (header !== 'Date' && header !== 'Time' && header !== 'Entrance Hymn' && header !== 'Epistle Hymn' && header !== 'Offertory' && header !== 'Bread' && header !== 'Cup' && header !== 'Hymn of Response') { // Exclude 'Date' and 'Time' columns
+                        dropdownList.append(`<div class="dropdown-item">
+                                    <input type="checkbox" class="column-checkbox" value="${header}"> ${header}
+                                </div>`);
+                    }
+                });
+            }
+
             $.ajax({
                 type: "GET",
                 url: "best_book_yet.json",
@@ -129,6 +324,9 @@
                 success: function (data) {
                     // Extract headers from JSON data
                     var headers = Object.keys(data[0]);
+
+                    generateColumnCheckboxes(headers);
+                    generateColumnCheckboxesSummary(headers);
 
                     // Find the index of the 'Date' column
                     var dateColumnIndex = headers.indexOf('Date');
@@ -157,10 +355,64 @@
                         "scrollX": true,
                         "scrollCollapse": true,
                         "paging": true,
-                        "order": [[dateColumnIndex, 'desc']], // Order by 'Date' column in descending order
+                        "order": [
+                            [dateColumnIndex, 'desc']
+                        ], // Order by 'Date' column in descending order
                         "fixedHeader": true
                     });
 
+                    // Populate second table (Tab 2)
+                    populateSecondTable(data);
+
+                    // Initialize DataTable for Tab 2
+                    $('#models2').DataTable({
+                        "scrollY": "400px",
+                        "scrollX": true,
+                        "scrollCollapse": true,
+                        "paging": true,
+                        "searching": true,
+                        "ordering": true,
+                        "order": [
+                            [0, 'desc']
+                        ]
+                    });
+
+                    // Example usage:
+                    var tableData = extractDataFromOriginalData(data);
+                    // Populate second table (Tab 3)
+                    populateThirdTable(tableData);
+
+                    // Initialize DataTable for Tab 3
+                    $('#song-summary-table').DataTable({
+                        "scrollCollapse": true,
+                        "paging": true,
+                        "searching": true,
+                        "ordering": true,
+                        "order": [
+                            [1, 'desc']
+                        ]
+                    });
+
+
+
+                    // Initialize DataTable for Tab 4
+                    $('#column-summary-table').DataTable({
+                        "scrollCollapse": true,
+                        "paging": true,
+                        "searching": true,
+                        "ordering": true,
+                        "order": [
+                            [1, 'desc']
+                        ]
+                    });
+                    // After the Ajax request success, call this function to generate the dropdown
+                    generateColumnDropdown(headers);
+
+                    // Event listener for dropdown items
+                    $('#column-dropdown').on('click', '.dropdown-item', function () {
+                        var selectedColumn = $(this).data('column');
+                        populateColumnSummaryTable(tableData, selectedColumn);
+                    });
                     // Generate checkboxes for each column dynamically
                     headers.forEach(function (header, index) {
                         $('#column-checkboxes').append('<label><input type="checkbox" class="column-checkbox" data-column="' + index + '" checked>' + header + '</label>');
@@ -191,5 +443,8 @@
                 }
             });
         });
-
     </script>
+
+</body>
+
+</html>
