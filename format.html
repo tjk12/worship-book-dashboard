@@ -73,15 +73,15 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="tab2-tab" data-toggle="tab" href="#tab2" role="tab" aria-controls="tab2"
-                    aria-selected="false">Song Craft</a>
+                    aria-selected="false">Cantus</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="tab3-tab" data-toggle="tab" href="#tab3" role="tab" aria-controls="tab3"
-                    aria-selected="false">Song Summary</a>
+                    aria-selected="false">Cantus Summary</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="tab4-tab" data-toggle="tab" href="#tab4" role="tab" aria-controls="tab4"
-                    aria-selected="false">Column Summary</a>
+                    aria-selected="false">Liturgical Summary</a>
             </li>
         </ul>
         <div class="tab-content" id="myTabContent">
@@ -457,6 +457,20 @@
                         $('#column-checkboxes').append('<label><input type="checkbox" class="column-checkbox" data-column="' + index + '" checked>' + header + '</label>');
                     });
 
+                    $('#toggle-songs').change(function () {
+                        if ($(this).prop('checked')) {
+                            // Uncheck all checkboxes except for Lord's Day Date and Entrance Hymn
+                            $('.column-checkbox').each(function () {
+                                var columnName = $(this).parent().text().trim();
+                                if (columnName !== 'Date' && columnName !== 'Time' && columnName !== 'Entrance Hymn' && columnName !== 'Epistle Hymn' && columnName !== 'Offertory' && columnName !== 'Bread' && columnName !== 'Cup' && columnName !== 'Hymn of Response') {
+                                    $(this).prop('checked', false).trigger('change');
+                                }
+                            });
+                        } else {
+                            // Reset all checkboxes
+                            $('.column-checkbox').prop('checked', true).trigger('change');
+                        }
+                    });
                     // Toggle all columns checkbox event handler
                     $('#toggle-all-columns').change(function () {
                         var isChecked = $(this).prop('checked');
