@@ -146,36 +146,36 @@
                 </div>
             </div>
             <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab">
-                <div class="dropdown mt-4">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="columnDropdownButton"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Select Column to Summarize
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="columnDropdownButton" id="column-dropdown">
-                        <!-- Dropdown items will be populated dynamically -->
+                <div class="container-fluid py-4">
+                    <label for="columnSelect">Select Column to Summarize</label>
+                    <select class="form-control" id="columnSelect">
+                        <option value="Benediction">Benediction</option>
+                        <option value="Presentation of Tithes and Offerings Passage Prelude">Presentation of Tithes and
+                            Offerings Passage Prelude</option>
+                    </select>
+
+                    <div class="table-responsive">
+                        <table class="table" id="column-summary-table">
+                            <thead>
+                                <tr>
+                                    <th>Value</th>
+                                    <th>Count</th>
+                                    <th>Most Recent Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="column-summary-table-body">
+                                <!-- Table body will be populated dynamically -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <div class="table-responsive">
-                    <table class="table" id="column-summary-table">
-                        <thead>
-                            <tr>
-                                <th>Column</th>
-                                <th>Count</th>
-                                <th>Most Recent Date</th>
-                            </tr>
-                        </thead>
-                        <tbody id="column-summary-table-body">
-                            <!-- Table body will be populated dynamically -->
-                        </tbody>
-                    </table>
-                </div>
             </div>
-
         </div>
     </div>
 
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
@@ -248,19 +248,42 @@
                 return groupedData;
             }
 
-            // Function to populate the summarized data table
+            // Function to populate the fourth table with column summary data
             function populateColumnSummaryTable(data, selectedColumn) {
-                var summaryData = groupByColumn(data, selectedColumn);
-                var tableBody = $('#column-summary-table-body');
-                tableBody.empty();
-                for (var column in summaryData) {
-                    if (summaryData.hasOwnProperty(column)) {
-                        var count = summaryData[column].count;
-                        var mostRecentDate = summaryData[column].mostRecentDate;
-                        tableBody.append(`<tr><td>${column}</td><td>${count}</td><td>${mostRecentDate}</td></tr>`);
+                var groupedData = groupByColumn(data, selectedColumn);
+                var tableData = [];
+                for (var value in groupedData) {
+                    if (groupedData.hasOwnProperty(value) && value.trim() !== '') { // Check if value is not blank
+                        var count = groupedData[value].count;
+                        var mostRecentDate = groupedData[value].mostRecentDate;
+                        tableData.push([value, count, mostRecentDate]);
                     }
                 }
+
+                // Update DataTable with the new data
+                columnSummaryTable.clear().rows.add(tableData).draw();
             }
+
+
+
+            // Function to group data by selected column
+            function groupByColumn(data, column) {
+                var groupedData = {};
+                data.forEach(function (row) {
+                    var value = row[column];
+                    if (!groupedData[value]) {
+                        groupedData[value] = { count: 1, mostRecentDate: row['Date'] };
+                    } else {
+                        groupedData[value].count++;
+                        if (row['Date'] > groupedData[value].mostRecentDate) {
+                            groupedData[value].mostRecentDate = row['Date'];
+                        }
+                    }
+                });
+                return groupedData;
+            }
+
+
 
 
 
@@ -275,33 +298,23 @@
                 });
             }
 
-            // Function to group data by selected columns and calculate count and most recent date
-            function groupByColumn(data, columns) {
-                var groupedData = {};
-                data.forEach(function (row) {
-                    columns.forEach(function (column) {
-                        if (row[column]) {
-                            if (!groupedData[column]) {
-                                groupedData[column] = { count: 1, mostRecentDate: row['Date'] };
-                            } else {
-                                groupedData[column].count++;
-                                if (row['Date'] > groupedData[column].mostRecentDate) {
-                                    groupedData[column].mostRecentDate = row['Date'];
-                                }
-                            }
-                        }
-                    });
-                });
-                return groupedData;
-            }
-            function generateColumnDropdown(headers) {
-                var dropdownMenu = $('#column-dropdown');
-                dropdownMenu.empty();
-                headers.forEach(function (header) {
-                    dropdownMenu.append(`<a class="dropdown-item" href="#" data-column="${header}">${header}</a>`);
-                });
-            }
 
+
+            var originalData; // Store the original data for the fourth table
+            var columnSummaryTable; // Store a reference to the DataTable for the fourth table
+
+            // Function to initialize DataTables for the fourth table
+            function initializeColumnSummaryTable() {
+                columnSummaryTable = $('#column-summary-table').DataTable({
+                    "scrollCollapse": true,
+                    "paging": true,
+                    "searching": true,
+                    "ordering": true,
+                    "order": [
+                        [1, 'desc']
+                    ]
+                });
+            }
 
 
             // Function to generate checkboxes for selecting columns dynamically
@@ -394,25 +407,18 @@
                     });
 
 
-
-                    // Initialize DataTable for Tab 4
-                    $('#column-summary-table').DataTable({
-                        "scrollCollapse": true,
-                        "paging": true,
-                        "searching": true,
-                        "ordering": true,
-                        "order": [
-                            [1, 'desc']
-                        ]
-                    });
-                    // After the Ajax request success, call this function to generate the dropdown
-                    generateColumnDropdown(headers);
+                    // Initialize DataTable for the fourth table
+                    initializeColumnSummaryTable();
 
                     // Event listener for dropdown items
-                    $('#column-dropdown').on('click', '.dropdown-item', function () {
-                        var selectedColumn = $(this).data('column');
-                        populateColumnSummaryTable(tableData, selectedColumn);
+                    $('#columnSelect').change(function () {
+                        var selectedColumn = $(this).val();
+                        populateColumnSummaryTable(data, selectedColumn);
                     });
+
+
+
+
                     // Generate checkboxes for each column dynamically
                     headers.forEach(function (header, index) {
                         $('#column-checkboxes').append('<label><input type="checkbox" class="column-checkbox" data-column="' + index + '" checked>' + header + '</label>');
