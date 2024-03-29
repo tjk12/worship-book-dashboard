@@ -17,6 +17,10 @@
             word-wrap: break-word;
         }
 
+        #models2 th {
+            text-align: center !important;
+        }
+
         td div.scrolling-cell {
             overflow: auto;
             max-height: 5rem;
@@ -149,9 +153,7 @@
                 <div class="container-fluid py-4">
                     <label for="columnSelect">Select Column to Summarize</label>
                     <select class="form-control" id="columnSelect">
-                        <option value="Benediction">Benediction</option>
-                        <option value="Presentation of Tithes and Offerings Passage Prelude">Presentation of Tithes and
-                            Offerings Passage Prelude</option>
+                        <!-- Dropdown options will be dynamically populated here -->
                     </select>
 
                     <div class="table-responsive">
@@ -170,6 +172,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -182,6 +185,7 @@
     <script>
         $(document).ready(function () {
             // Function to transform data and populate the second table
+            // Function to populate second table (Tab 2)
             function populateSecondTable(data) {
                 var tableBody = $('#table-body2');
                 tableBody.empty();
@@ -193,7 +197,30 @@
                     tableBody.append(`<tr><td>${row.Date}</td><td>Cup</td><td>${row['Cup']}</td></tr>`);
                     tableBody.append(`<tr><td>${row.Date}</td><td>Hymn of Response</td><td>${row['Hymn of Response']}</td></tr>`);
                 });
+                // Initialize DataTable for Tab 2 after table content is loaded
+                initializeDataTable2();
             }
+
+            // Function to initialize DataTable for Tab 2
+            function initializeDataTable2() {
+                $('#models2').DataTable({
+                    "scrollY": "400px",
+                    "scrollX": true,
+                    "scrollCollapse": true,
+                    "paging": true,
+                    "searching": true,
+                    "ordering": true,
+                    "autoWidth": true, // Adjust column widths automatically
+                    "order": [
+                        [0, 'desc']
+                    ],
+                    "drawCallback": function () {
+                        $('#models2 thead th').css('text-align', 'center'); // Center align headers
+                    }
+                });
+            }
+
+
 
             // Function to extract 'Date' and 'Title' from the original data
             function extractDataFromOriginalData(data) {
@@ -229,6 +256,23 @@
                         tableBody.append(`<tr><td>${title}</td><td>${count}</td><td>${mostRecentDate}</td></tr>`);
                     }
                 }
+            }
+
+            // Function to populate the dropdown with column headers
+            function populateColumnDropdown(headers) {
+                var dropdown = $('#columnSelect');
+                dropdown.empty(); // Clear existing options
+
+                headers.forEach(function (header) {
+                    if (header !== 'Date' && header !== 'Time') {
+                        dropdown.append(`<option value="${header}">${header}</option>`);
+                    }
+                });
+            }
+
+            // Update DataTable for the fourth table
+            function updateColumnSummaryTable(data, selectedColumn) {
+                populateColumnSummaryTable(data, selectedColumn);
             }
 
             function groupByTitle(data) {
@@ -341,6 +385,9 @@
                     generateColumnCheckboxes(headers);
                     generateColumnCheckboxesSummary(headers);
 
+                    // Populate the dropdown with column headers
+                    populateColumnDropdown(headers);
+
                     // Find the index of the 'Date' column
                     var dateColumnIndex = headers.indexOf('Date');
 
@@ -377,18 +424,7 @@
                     // Populate second table (Tab 2)
                     populateSecondTable(data);
 
-                    // Initialize DataTable for Tab 2
-                    $('#models2').DataTable({
-                        "scrollY": "400px",
-                        "scrollX": true,
-                        "scrollCollapse": true,
-                        "paging": true,
-                        "searching": true,
-                        "ordering": true,
-                        "order": [
-                            [0, 'desc']
-                        ]
-                    });
+
 
                     // Example usage:
                     var tableData = extractDataFromOriginalData(data);
@@ -413,11 +449,8 @@
                     // Event listener for dropdown items
                     $('#columnSelect').change(function () {
                         var selectedColumn = $(this).val();
-                        populateColumnSummaryTable(data, selectedColumn);
+                        updateColumnSummaryTable(data, selectedColumn);
                     });
-
-
-
 
                     // Generate checkboxes for each column dynamically
                     headers.forEach(function (header, index) {
